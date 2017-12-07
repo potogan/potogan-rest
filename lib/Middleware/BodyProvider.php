@@ -5,11 +5,9 @@ namespace Potogan\REST\Middleware;
 use Potogan\REST\MiddlewareInterface;
 use Potogan\REST\BodyProviderInterface;
 use Potogan\REST\TransformerInterface;
-use Http\Message\StreamFactory;
 use Potogan\REST\ClientInterface;
 use Potogan\REST\RequestInterface;
 use Psr\Http\Message\RequestInterface as HttpRequest;
-use Psr\Http\Message\StreamInterface;
 
 /**
  * Middleware setting request body by calling a BodyProvider then transformers
@@ -27,22 +25,16 @@ class BodyProvider implements MiddlewareInterface
     protected $transformer;
 
     /**
-     * @var StreamFactory
-     */
-    protected $streamFactory;
-
-    /**
      * Class constructor.
      *
      * @param BodyProviderInterface $provider
      * @param TransformerInterface  $transformer
      * @param StreamFactory         $streamFactory
      */
-    public function __construct(BodyProviderInterface $provider, TransformerInterface $transformer, StreamFactory $streamFactory)
+    public function __construct(BodyProviderInterface $provider, TransformerInterface $transformer)
     {
         $this->provider = $provider;
         $this->transformer = $transformer;
-        $this->streamFactory = $streamFactory;
     }
 
     /**
@@ -54,10 +46,6 @@ class BodyProvider implements MiddlewareInterface
 
         if ($this->transformer->supports($httpRequest)) {
             $body = $this->transformer->serialize($httpRequest, $body);
-        }
-        
-        if (!$body instanceof StreamFactory) {
-            $body = $this->streamFactory->createStream($body);
         }
 
         return $httpRequest

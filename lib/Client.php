@@ -57,55 +57,19 @@ class Client implements ClientInterface
     /**
      * Class constructor.
      * 
-     * @param string $baseUrl        Rest service base url.
-     * @param array  $defaultHeaders Default HTTP request headers.
-     */
-    public function __construct($baseUrl, array $defaultHeaders = array())
-    {
-        $this->baseUrl = $baseUrl;
-        $this->defaultHeaders = $defaultHeaders;
-    }
-
-    /**
-     * Sets the Request factory..
-     *
-     * @param RequestFactory $requestFactory
-     *
-     * @return self
-     */
-    public function setRequestFactory(RequestFactory $requestFactory)
-    {
-        $this->requestFactory = $requestFactory;
-
-        return $this;
-    }
-
-    /**
-     * Sets the transformer.
-     *
+     * @param string               $baseUrl        Rest service base url.
+     * @param array                $defaultHeaders Default HTTP request headers.
+     * @param RequestFactory       $requestFactory
      * @param TransformerInterface $transformer
-     *
-     * @return self
+     * @param HttpClient           $httpClient
      */
-    public function setTransformer(TransformerInterface $transformer)
+    public function __construct($baseUrl, array $defaultHeaders = array(), RequestFactory $requestFactory, TransformerInterface $transformer, HttpClient $httpClient)
     {
-        $this->transformer = $transformer;
-
-        return $this;
-    }
-
-    /**
-     * Sets Http client.
-     * 
-     * @param HttpClient $httpClient
-     *
-     * @return self
-     */
-    public function setHttpClient(HttpClient $httpClient)
-    {
-        $this->httpClient = $httpClient;
-
-        return $this;
+        $this->baseUrl        = $baseUrl;
+        $this->defaultHeaders = $defaultHeaders;
+        $this->requestFactory = $requestFactory;
+        $this->transformer    = $transformer;
+        $this->httpClient     = $httpClient;
     }
 
     /**
@@ -127,7 +91,7 @@ class Client implements ClientInterface
             'GET',
             $uri = $this->baseUrl,
             $headers = $this->defaultHeaders,
-            null,
+            $body = null,
             $protocolVersion = '1.1'
         );
 
@@ -137,13 +101,12 @@ class Client implements ClientInterface
 
         $response = $this->httpClient->sendRequest($httpRequest);
 
-        $body = $response->getBody()->__toString();
-
+        $body = null;
         if ($this->transformer->supports($response)) {
-            $body = $this->transformer->serialize($response, $body);
+            $body = $this->transformer->unserialize($response, $response->getBody());
         }
 
-        return $body;
+        return new Response($request, $httpRequest, $response, $body);
     }
 
     /**
