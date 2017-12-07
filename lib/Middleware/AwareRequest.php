@@ -19,9 +19,28 @@ class AwareRequest implements MiddlewareInterface
             return $httpRequest;
         }
 
+        // Basic relative url resolving.
+        $uri = $httpRequest->getUri();
+        $parts = parse_url((string)$request->getUri());
+
+        if (isset($parts['host'])) {
+            $uri = $request->getUri();
+        } elseif (isset($parts['path'])) {
+            if (substr($parts['path'], 0, 1) === '/') {
+                $uri->withPath($parts['path']);
+            } else {
+                $uri->withPath($uri->getPath() . $parts['path']);
+            }
+
+            $uri
+                ->withQuery(isset($parts['query']) ? $parts['query'] : null)
+                ->withFragment(isset($parts['fragment']) ? $parts['fragment'] : null)
+            ;
+        }
+
         $httpRequest = $httpRequest
             ->withMethod($request->getMethod())
-            ->withUri($request->getUri())
+            ->withUri($uri)
         ;
 
         foreach ($request->getHeaders() as $key => $value) {
