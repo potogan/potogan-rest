@@ -2,7 +2,7 @@
 
 namespace Potogan\REST;
 
-interface RequestInterface
+interface AnnotationInterface
 {
-    
+
 }
