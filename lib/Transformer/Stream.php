@@ -51,10 +51,10 @@ class Stream implements TransformerInterface
      */
     public function unserialize(MessageInterface $message, $body)
     {
-
         if ($body instanceof StreamInterface) {
-            return $this->streamFactory->createStream($body);
+            return (string)$body;
         }
-        return (string)$body;
+
+        return $body;
     }
 }

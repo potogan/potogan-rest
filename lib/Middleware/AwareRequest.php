@@ -23,20 +23,36 @@ class AwareRequest implements MiddlewareInterface
         $uri = $httpRequest->getUri();
         $parts = parse_url((string)$request->getUri());
 
-        if (isset($parts['host'])) {
-            $uri = $request->getUri();
-        } elseif (isset($parts['path'])) {
-            if (substr($parts['path'], 0, 1) === '/') {
-                $uri->withPath($parts['path']);
-            } else {
-                $uri->withPath($uri->getPath() . $parts['path']);
-            }
+        if (isset($parts['scheme'])) {
+            $uri = $uri->withScheme($parts['scheme']);
+        }
 
-            $uri
-                ->withQuery(isset($parts['query']) ? $parts['query'] : null)
-                ->withFragment(isset($parts['fragment']) ? $parts['fragment'] : null)
+        if (isset($parts['user'])) {
+            $uri = $uri->withUserInfo(
+                $parts['user'],
+                isset($parts['pass']) ? $parts['pass'] : null
+            );
+        }
+
+        if (isset($parts['host'])) {
+            $uri = $uri
+                ->withHost($parts['host'])
+                ->withPort(isset($parts['port']) ? $parts['port'] : null)
             ;
         }
+
+        if (isset($parts['path'])) {
+            if (substr($parts['path'], 0, 1) === '/') {
+                $uri = $uri->withPath($parts['path']);
+            } else {
+                $uri = $uri->withPath($uri->getPath() . $parts['path']);
+            }
+        }
+
+        $uri = $uri
+            ->withQuery(isset($parts['query']) ? $parts['query'] : '')
+            ->withFragment(isset($parts['fragment']) ? $parts['fragment'] : '')
+        ;
 
         $httpRequest = $httpRequest
             ->withMethod($request->getMethod())

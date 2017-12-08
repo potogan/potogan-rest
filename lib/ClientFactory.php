@@ -5,7 +5,7 @@ namespace Potogan\REST;
 use Http\Message\RequestFactory;
 use Http\Client\HttpClient;
 
-class Client implements ClientInterface
+class ClientFactory
 {
     /**
      * Request factory.
@@ -69,7 +69,7 @@ class Client implements ClientInterface
      */
     public function build($baseUrl, array $defaultHeaders = array())
     {
-        $client = new CLient($baseUrl, $this->requestFactory, $this->transformer, $this->httpClient);
+        $client = new Client($baseUrl, $defaultHeaders, $this->requestFactory, $this->transformer, $this->httpClient);
 
         foreach ($this->middlewares as $middleware) {
             $client->addMiddleware($middleware);
