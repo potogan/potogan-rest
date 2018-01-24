@@ -16,6 +16,20 @@ class Chain implements BodyProviderInterface
     protected $providers = array();
 
     /**
+     * Adds a bunch of providers to the chain.
+     *
+     * @param iterable<BodyProviderInterface> $providers
+     */
+    public function addProviders($providers)
+    {
+        foreach ($providers as $provider) {
+            $this->addProvider($provider);
+        }
+
+        return $this;
+    }
+
+    /**
      * Adds a provider to the chain.
      *
      * @param BodyProviderInterface $provider
