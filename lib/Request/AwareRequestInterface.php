@@ -2,10 +2,9 @@
 
 namespace Potogan\REST\Request;
 
-use Potogan\REST\RequestInterface;
 use Psr\Http\Message\UriInterface;
 
-interface AwareRequestInterface extends RequestInterface
+interface AwareRequestInterface extends BodyAwareRequestInterface
 {
     /**
      * Gets the url (or path) for this request.
@@ -27,11 +26,4 @@ interface AwareRequestInterface extends RequestInterface
      * @return array
      */
     public function getHeaders();
-
-    /**
-     * Gets the http body for this request.
-     * 
-     * @return mixed
-     */
-    public function getBody();
 }
