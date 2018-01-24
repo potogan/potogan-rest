@@ -63,7 +63,7 @@ class Client implements ClientInterface
      * @param TransformerInterface $transformer
      * @param HttpClient           $httpClient
      */
-    public function __construct($baseUrl, array $defaultHeaders = array(), RequestFactory $requestFactory, TransformerInterface $transformer, HttpClient $httpClient)
+    public function __construct($baseUrl = null, array $defaultHeaders = array(), RequestFactory $requestFactory, TransformerInterface $transformer, HttpClient $httpClient)
     {
         $this->baseUrl        = $baseUrl;
         $this->defaultHeaders = $defaultHeaders;

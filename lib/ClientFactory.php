@@ -79,7 +79,7 @@ class ClientFactory
      *
      * @return ClientInterface
      */
-    public function build($baseUrl, array $defaultHeaders = array())
+    public function build($baseUrl = null, array $defaultHeaders = array())
     {
         $client = new Client($baseUrl, $defaultHeaders, $this->requestFactory, $this->transformer, $this->httpClient);
 
