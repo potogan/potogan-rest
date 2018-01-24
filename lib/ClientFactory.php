@@ -50,6 +50,18 @@ class ClientFactory
     }
 
     /**
+     * Adds multiple middlewares.
+     *
+     * @param iterable<MiddlewareInterface> $middlewares
+     */
+    public function addMiddlewares($middlewares)
+    {
+        foreach ($middlewares as $middleware) {
+            $this->addMiddleware($middleware);
+        }
+    }
+
+    /**
      * Adds a middleware.
      * 
      * @param MiddlewareInterface $middleware
@@ -71,9 +83,7 @@ class ClientFactory
     {
         $client = new Client($baseUrl, $defaultHeaders, $this->requestFactory, $this->transformer, $this->httpClient);
 
-        foreach ($this->middlewares as $middleware) {
-            $client->addMiddleware($middleware);
-        }
+        $client->addMiddlewares($this->middlewares);
 
         return $client;
     }

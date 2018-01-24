@@ -73,6 +73,18 @@ class Client implements ClientInterface
     }
 
     /**
+     * Adds multiple middlewares.
+     *
+     * @param iterable<MiddlewareInterface> $middlewares
+     */
+    public function addMiddlewares($middlewares)
+    {
+        foreach ($middlewares as $middleware) {
+            $this->addMiddleware($middleware);
+        }
+    }
+
+    /**
      * Adds a middleware.
      * 
      * @param MiddlewareInterface $middleware
