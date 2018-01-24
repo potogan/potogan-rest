@@ -12,7 +12,7 @@ class Json implements TransformerInterface
      */
     public function supports(MessageInterface $message)
     {
-        return $message->getHeaderLine('Content-Type') === 'application/json';
+        return preg_match('/^application\\/json($|;)/', $message->getHeaderLine('Content-Type'));
     }
 
     /**
