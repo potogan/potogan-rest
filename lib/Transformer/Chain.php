@@ -15,7 +15,21 @@ class Chain implements TransformerInterface
     protected $transformers = array();
 
     /**
-     * Atts a transformer to the chain.
+     * Adds a bunch of transformers to the chain.
+     *
+     * @param iterable<TransformerInterface> $transformers
+     */
+    public function addTransformers($transformers)
+    {
+        foreach ($transformers as $transformer) {
+            $this->addTransformer($transformer);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds a transformer to the chain.
      *
      * @param TransformerInterface $transformer
      */
