@@ -101,13 +101,13 @@ class AnnotationReader implements MiddlewareInterface
         if ($lastBaseUri !== null) {
             $httpRequest = $httpRequest->withUri($this->merger->merge(
                 $httpRequest->getUri(),
-                $lastBaseUri->value
+                $lastBaseUri->getUri($request)
             ));
         }
         if ($lastLocalUri !== null) {
             $httpRequest = $httpRequest->withUri($this->merger->merge(
                 $httpRequest->getUri(),
-                $lastLocalUri->value
+                $lastLocalUri->getUri($request)
             ));
         }
         if ($lastMethod !== null) {
