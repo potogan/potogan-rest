@@ -1,6 +1,8 @@
 {
     "name": "potogan/rest",
     "type": "library",
+    "license": "MIT",
+    "keywords": ["REST"],
     "autoload": {
         "psr-4": {
             "Potogan\\REST\\": "lib/",
@@ -11,9 +13,9 @@
         "psr/http-message": "^1.0",
         "php-http/httplug": "^1.1",
         "php-http/message-factory": "^1.0",
-        "doctrine/annotations": "1.*"
+        "doctrine/annotations": "1.*",
+        "php-http/promise": "^1.0"
     },
-    "license": "MIT",
     "authors": [
         {
             "name": "Pierre Dudoret",
