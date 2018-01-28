@@ -29,14 +29,14 @@ class Response
      *
      * @var HttpResponse
      */
-    protected $response;
+    protected $httpResponse;
 
     /**
      * Parsed response body.
      *
      * @var mixed
      */
-    protected $parsedBody;
+    protected $body;
 
     /**
      * Class constructor.
@@ -44,14 +44,12 @@ class Response
      * @param RequestInterface $request     REST Request.
      * @param HttpRequest      $httpRequest HTTP Request.
      * @param HttpResponse     $response    HTTP Response.
-     * @param mixed            $parsedBody  Parsed response body.
      */
-    public function __construct(RequestInterface $request, HttpRequest $httpRequest, HttpResponse $response, $parsedBody)
+    public function __construct(RequestInterface $request, HttpRequest $httpRequest, HttpResponse $httpResponse)
     {
-        $this->request     = $request;
-        $this->httpRequest = $httpRequest;
-        $this->response    = $response;
-        $this->parsedBody  = $parsedBody;
+        $this->request      = $request;
+        $this->httpRequest  = $httpRequest;
+        $this->httpResponse = $httpResponse;
     }
 
     /**
@@ -79,9 +77,23 @@ class Response
      *
      * @return HttpResponse
      */
-    public function getResponse()
+    public function getHttpResponse()
     {
-        return $this->response;
+        return $this->httpResponse;
+    }
+
+    /**
+     * Returns an instance with the given body.
+     *
+     * @return static
+     */
+    public function withBody()
+    {
+        $res = clone $this;
+
+        $res->body = $body;
+
+        return $res;
     }
 
     /**
@@ -89,8 +101,8 @@ class Response
      *
      * @return mixed
      */
-    public function getParsedBody()
+    public function getBody()
     {
-        return $this->parsedBody;
+        return $this->body;
     }
 }

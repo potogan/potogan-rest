@@ -2,22 +2,25 @@
 
 namespace Potogan\REST;
 
+use Http\Promise\Promise;
 use Psr\Http\Message\RequestInterface as HttpRequest;
 
 /**
  * REST Client middlewares are meant to build/update the HTTP request based on the REST requets,
  *     before the HttpRequest is sent throught a Http client.
+ *
+ * Inspired from PSR 15
  */
 interface MiddlewareInterface
 {
     /**
-     * Handles HttpRequest.
+     * Processes a REST Request.
      *
-     * @param ClientInterface  $client      REST client.
-     * @param RequestInterface $request     REST request.
-     * @param HttpRequest      $httpRequest HTTP Request created by previous middlewares.
+     * @param RequestInterface        $request     REST request.
+     * @param HttpRequest             $httpRequest HTTP Request created by previous middlewares.
+     * @param RequestHandlerInterface $handler     REST Request handler.
      *
-     * @return HttpRequest
+     * @return Promise<Response>
      */
-    public function handle(ClientInterface $client, RequestInterface $request, HttpRequest $httpRequest);
+    public function process(RequestInterface $request, HttpRequest $httpRequest, RequestHandlerInterface $handler);
 }

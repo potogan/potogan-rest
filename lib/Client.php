@@ -15,16 +15,11 @@ class Client implements ClientInterface
     protected $requestFactory;
 
     /**
-     * Middlewares
+     * REST Request handler
      * 
-     * @var array<MiddlewareInterface>
+     * @var RequestHandlerInterface
      */
-    protected $middlewares = array();
-
-    /**
-     * @var TransformerInterface
-     */
-    protected $transformer;
+    protected $handler;
 
     /**
      * Rest service base url.
@@ -48,50 +43,19 @@ class Client implements ClientInterface
     protected $attributes = array();
 
     /**
-     * HTTP Client
-     * 
-     * @var HttpClient
-     */
-    protected $httpClient;
-
-    /**
      * Class constructor.
      * 
-     * @param string               $baseUrl        Rest service base url.
-     * @param array                $defaultHeaders Default HTTP request headers.
-     * @param RequestFactory       $requestFactory
-     * @param TransformerInterface $transformer
-     * @param HttpClient           $httpClient
+     * @param RequestFactory          $requestFactory HTTP Request factory.
+     * @param RequestHandlerInterface $handler        REST Request handler (basically a middleware chain ending on an HTTP Client) 
+     * @param string                  $baseUrl        Rest service base url.
+     * @param array                   $defaultHeaders Default HTTP request headers.
      */
-    public function __construct($baseUrl = null, array $defaultHeaders = array(), RequestFactory $requestFactory, TransformerInterface $transformer, HttpClient $httpClient)
+    public function __construct(RequestFactory $requestFactory, RequestHandlerInterface $handler, $baseUrl = null, array $defaultHeaders = array())
     {
         $this->baseUrl        = $baseUrl;
         $this->defaultHeaders = $defaultHeaders;
         $this->requestFactory = $requestFactory;
-        $this->transformer    = $transformer;
-        $this->httpClient     = $httpClient;
-    }
-
-    /**
-     * Adds multiple middlewares.
-     *
-     * @param iterable<MiddlewareInterface> $middlewares
-     */
-    public function addMiddlewares($middlewares)
-    {
-        foreach ($middlewares as $middleware) {
-            $this->addMiddleware($middleware);
-        }
-    }
-
-    /**
-     * Adds a middleware.
-     * 
-     * @param MiddlewareInterface $middleware
-     */
-    public function addMiddleware(MiddlewareInterface $middleware)
-    {
-        $this->middlewares[] = $middleware;
+        $this->handler        = $handler;
     }
 
     /**
@@ -107,18 +71,7 @@ class Client implements ClientInterface
             $protocolVersion = '1.1'
         );
 
-        foreach ($this->middlewares as $middle) {
-            $httpRequest = $middle->handle($this, $request, $httpRequest);
-        }
-
-        $response = $this->httpClient->sendRequest($httpRequest);
-
-        $body = null;
-        if ($this->transformer->supports($response)) {
-            $body = $this->transformer->unserialize($response, $response->getBody());
-        }
-
-        return new Response($request, $httpRequest, $response, $body);
+        return $this->handler->handle($request, $httpRequest)->wait();
     }
 
     /**

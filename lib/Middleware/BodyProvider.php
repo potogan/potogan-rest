@@ -5,8 +5,9 @@ namespace Potogan\REST\Middleware;
 use Potogan\REST\MiddlewareInterface;
 use Potogan\REST\BodyProviderInterface;
 use Potogan\REST\TransformerInterface;
-use Potogan\REST\ClientInterface;
+use Potogan\REST\Response;
 use Potogan\REST\RequestInterface;
+use Potogan\REST\RequestHandlerInterface;
 use Psr\Http\Message\RequestInterface as HttpRequest;
 
 /**
@@ -29,7 +30,6 @@ class BodyProvider implements MiddlewareInterface
      *
      * @param BodyProviderInterface $provider
      * @param TransformerInterface  $transformer
-     * @param StreamFactory         $streamFactory
      */
     public function __construct(BodyProviderInterface $provider, TransformerInterface $transformer)
     {
@@ -40,7 +40,7 @@ class BodyProvider implements MiddlewareInterface
     /**
      * {@inheritDoc}
      */
-    public function handle(ClientInterface $client, RequestInterface $request, HttpRequest $httpRequest)
+    public function process(RequestInterface $request, HttpRequest $httpRequest, RequestHandlerInterface $handler)
     {
         $body = $this->provider->provide($request, $httpRequest, $httpRequest->getBody());
 
@@ -48,8 +48,26 @@ class BodyProvider implements MiddlewareInterface
             $body = $this->transformer->serialize($httpRequest, $body);
         }
 
-        return $httpRequest
+        $httpRequest = $httpRequest
             ->withBody($body)
         ;
+
+        return $handler
+            ->handle($request, $httpRequest)
+            ->then(array($this, 'parseResponseBody'))
+        ;
+    }
+
+    public function parseResponseBody(Response $response)
+    {
+        $body = null;
+        if ($this->transformer->supports($response->getHttpResponse())) {
+            $body = $this->transformer->unserialize(
+                $response->getHttpResponse(),
+                $response->getHttpResponse()->getBody()
+            );
+        }
+
+        return $response->withParsedBody($body);
     }
 }

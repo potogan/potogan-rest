@@ -40,17 +40,16 @@ class ClientFactory
     /**
      * Class constructor.
      * 
-     * @param string               $baseUrl        Rest service base url.
-     * @param array                $defaultHeaders Default HTTP request headers.
-     * @param RequestFactory       $requestFactory
-     * @param TransformerInterface $transformer
-     * @param HttpAsyncClient           $httpClient
+     * @param RequestFactory                $requestFactory
+     * @param HttpAsyncClient               $httpClient
+     * @param iterable<MiddlewareInterface> $middlewares
      */
-    public function __construct(RequestFactory $requestFactory, TransformerInterface $transformer, HttpAsyncClient $httpClient)
+    public function __construct(RequestFactory $requestFactory, HttpAsyncClient $httpClient, $middlewares = array())
     {
         $this->requestFactory = $requestFactory;
-        $this->transformer    = $transformer;
         $this->httpClient     = $httpClient;
+
+        $this->addMiddlewares($middlewares);
     }
 
     /**
@@ -85,9 +84,12 @@ class ClientFactory
      */
     public function build($baseUrl = null, array $defaultHeaders = array())
     {
-        $client = new Client($baseUrl, $defaultHeaders, $this->requestFactory, $this->transformer, $this->httpClient);
-
-        $client->addMiddlewares($this->middlewares);
+        $client = new Client(
+            $this->requestFactory,
+            $this->buildMiddlewareStack(),
+            $baseUrl,
+            $defaultHeaders
+        );
 
         return $client;
     }

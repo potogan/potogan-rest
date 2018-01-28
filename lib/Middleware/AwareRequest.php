@@ -4,8 +4,8 @@ namespace Potogan\REST\Middleware;
 
 use Potogan\REST\MiddlewareInterface;
 use Potogan\REST\Http\UriMerger;
-use Potogan\REST\ClientInterface;
 use Potogan\REST\RequestInterface;
+use Potogan\REST\RequestHandlerInterface;
 use Psr\Http\Message\RequestInterface as HttpRequest;
 use Potogan\REST\Request\AwareRequestInterface;
 
@@ -31,10 +31,10 @@ class AwareRequest implements MiddlewareInterface
     /**
      * {@inheritDoc}
      */
-    public function handle(ClientInterface $client, RequestInterface $request, HttpRequest $httpRequest)
+    public function process(RequestInterface $request, HttpRequest $httpRequest, RequestHandlerInterface $handler)
     {
         if (!$request instanceof AwareRequestInterface) {
-            return $httpRequest;
+            return $handler->handle($request, $httpRequest);
         }
 
         $httpRequest = $httpRequest
@@ -46,6 +46,6 @@ class AwareRequest implements MiddlewareInterface
             $httpRequest = $httpRequest->withHeader($key, $value);
         }
 
-        return $httpRequest;
+        return $handler->handle($request, $httpRequest);
     }
 }
