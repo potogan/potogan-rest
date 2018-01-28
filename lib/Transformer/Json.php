@@ -4,6 +4,7 @@ namespace Potogan\REST\Transformer;
 
 use Potogan\REST\TransformerInterface;
 use Psr\Http\Message\MessageInterface;
+use Psr\Http\Message\StreamInterface;
 
 class Json implements TransformerInterface
 {
@@ -20,6 +21,10 @@ class Json implements TransformerInterface
      */
     public function serialize(MessageInterface $message, $body)
     {
+        if ($body instanceof StreamInterface) {
+            return $body;
+        }
+
         return json_encode($body);
     }
 
@@ -28,6 +33,10 @@ class Json implements TransformerInterface
      */
     public function unserialize(MessageInterface $message, $body)
     {
+        if (!is_string($body)) {
+            return $body;
+        }
+
         return json_decode($body, true);
     }
 }
