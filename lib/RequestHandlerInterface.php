@@ -15,21 +15,11 @@ interface RequestHandlerInterface
     /**
      * Handles the Request then return a promise of Response
      *
+     * @param ClientInterface  $client      REST Client.
      * @param RequestInterface $request     REST Request.
      * @param HttpRequest      $httpRequest HTTP Request.
      *
-     * @return Promise<Response>
+     * @return Response
      */
-    public function handle(RequestInterface $request, HttpRequest $httpRequest);
-
-    /**
-     * Handles the Request by restarting the whole RequestHandler stack (usefull to send a new 
-     *     Request during the processing of a Request)
-     *
-     * @param RequestInterface $request     REST Request.
-     * @param HttpRequest      $httpRequest HTTP Request.
-     *
-     * @return Promise<Response>
-     */
-    public function first(RequestInterface $request, HttpRequest $httpRequest);
+    public function handle(ClientInterface $client, RequestInterface $request, HttpRequest $httpRequest);
 }

@@ -2,8 +2,10 @@
 
 namespace Potogan\REST\RequestHandler;
 
-use Psr\Http\Message\MiddlewareInterface;
-use Psr\Http\Message\RequestHandlerInterface;
+use Potogan\REST\ClientInterface;
+use Potogan\REST\RequestInterface;
+use Potogan\REST\MiddlewareInterface;
+use Potogan\REST\RequestHandlerInterface;
 use Psr\Http\Message\RequestInterface as HttpRequest;
 
 /**
@@ -19,13 +21,6 @@ class MiddlewareChainElement implements RequestHandlerInterface
     protected $middleware;
     
     /**
-     * First handler in the chain.
-     *
-     * @var RequestHandlerInterface
-     */
-    protected $first;
-    
-    /**
      * Next handler in the chain.
      *
      * @var RequestHandlerInterface
@@ -36,29 +31,19 @@ class MiddlewareChainElement implements RequestHandlerInterface
      * Class constructor.
      *
      * @param MiddlewareInterface     $middleware Wrapped middleware.
-     * @param RequestHandlerInterface $first      First handler in the chain.
      * @param RequestHandlerInterface $next       Next handler in the chain.
      */
-    public function __construct(MiddlewareInterface $middleware, RequestHandlerInterface $first, RequestHandlerInterface $next)
+    public function __construct(MiddlewareInterface $middleware, RequestHandlerInterface $next)
     {
-        $this->middleware = $this->middleware;
-        $this->first = $this->first;
-        $this->next = $this->next;
+        $this->middleware = $middleware;
+        $this->next = $next;
     }
 
     /**
      * @inheritDoc
      */
-    public function handle(RequestInterface $request, HttpRequest $httpRequest)
+    public function handle(ClientInterface $client, RequestInterface $request, HttpRequest $httpRequest)
     {
-        return $this->middleware->handle($request, $httpRequest, $this->next);
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function first(RequestInterface $request, HttpRequest $httpRequest)
-    {
-        return $this->first->handle($request, $httpRequest);
+        return $this->middleware->process($client, $request, $httpRequest, $this->next);
     }
 }

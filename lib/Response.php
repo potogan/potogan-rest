@@ -85,9 +85,11 @@ class Response
     /**
      * Returns an instance with the given body.
      *
+     * @param string $body
+     *
      * @return static
      */
-    public function withBody()
+    public function withBody($body)
     {
         $res = clone $this;
 

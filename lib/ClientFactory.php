@@ -3,9 +3,8 @@
 namespace Potogan\REST;
 
 use Http\Message\RequestFactory;
-use Http\Client\HttpAsyncClient;
+use Http\Client\HttpClient;
 use Potogan\REST\RequestHandlerInterface;
-use Potogan\REST\RequestHandler\ChainFirstElement;
 use Potogan\REST\RequestHandler\HttpClient as HttpClientRequestHandler;
 use Potogan\REST\RequestHandler\MiddlewareChainElement;
 
@@ -26,7 +25,7 @@ class ClientFactory
     /**
      * HTTP Client
      * 
-     * @var HttpAsyncClient
+     * @var HttpClient
      */
     protected $httpClient;
 
@@ -41,10 +40,10 @@ class ClientFactory
      * Class constructor.
      * 
      * @param RequestFactory                $requestFactory
-     * @param HttpAsyncClient               $httpClient
+     * @param HttpClient                    $httpClient
      * @param iterable<MiddlewareInterface> $middlewares
      */
-    public function __construct(RequestFactory $requestFactory, HttpAsyncClient $httpClient, $middlewares = array())
+    public function __construct(RequestFactory $requestFactory, HttpClient $httpClient, $middlewares = array())
     {
         $this->requestFactory = $requestFactory;
         $this->httpClient     = $httpClient;
@@ -101,15 +100,12 @@ class ClientFactory
      */
     public function buildMiddlewareStack()
     {
-        $first = new ChainFirstElement();
-        $next = new HttpClientRequestHandler($this->client);
+        $next = new HttpClientRequestHandler($this->httpClient);
 
         foreach (array_reverse($this->middlewares) as $middleware) {
-            $next = new MiddlewareChainElement($middleware, $first, $next);
+            $next = new MiddlewareChainElement($middleware, $next);
         }
 
-        $first->setNext($next);
-
-        return $first;
+        return $next;
     }
 }

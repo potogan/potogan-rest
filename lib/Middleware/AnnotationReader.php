@@ -5,6 +5,7 @@ namespace Potogan\REST\Middleware;
 use Potogan\REST\MiddlewareInterface;
 use Doctrine\Common\Annotations\Reader;
 use Potogan\REST\Http\UriMerger;
+use Potogan\REST\ClientInterface;
 use Potogan\REST\RequestInterface;
 use Potogan\REST\RequestHandlerInterface;
 use Psr\Http\Message\RequestInterface as HttpRequest;
@@ -45,7 +46,7 @@ class AnnotationReader implements MiddlewareInterface
     /**
      * {@inheritDoc}
      */
-    public function process(RequestInterface $request, HttpRequest $httpRequest, RequestHandlerInterface $handler)
+    public function process(ClientInterface $client, RequestInterface $request, HttpRequest $httpRequest, RequestHandlerInterface $handler)
     {
         $classStack = array(new ReflectionClass($request));
 
@@ -114,6 +115,6 @@ class AnnotationReader implements MiddlewareInterface
             $httpRequest = $httpRequest->withMethod($lastMethod->value);
         }
 
-        return $handler->handle($request, $httpRequest);
+        return $handler->handle($client, $request, $httpRequest);
     }
 }

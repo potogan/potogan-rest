@@ -2,10 +2,10 @@
 
 namespace Potogan\REST\Middleware;
 
+use Potogan\REST\ClientInterface;
 use Potogan\REST\MiddlewareInterface;
 use Potogan\REST\BodyProviderInterface;
 use Potogan\REST\TransformerInterface;
-use Potogan\REST\Response;
 use Potogan\REST\RequestInterface;
 use Potogan\REST\RequestHandlerInterface;
 use Psr\Http\Message\RequestInterface as HttpRequest;
@@ -40,7 +40,7 @@ class BodyProvider implements MiddlewareInterface
     /**
      * {@inheritDoc}
      */
-    public function process(RequestInterface $request, HttpRequest $httpRequest, RequestHandlerInterface $handler)
+    public function process(ClientInterface $client, RequestInterface $request, HttpRequest $httpRequest, RequestHandlerInterface $handler)
     {
         $body = $this->provider->provide($request, $httpRequest, $httpRequest->getBody());
 
@@ -52,14 +52,8 @@ class BodyProvider implements MiddlewareInterface
             ->withBody($body)
         ;
 
-        return $handler
-            ->handle($request, $httpRequest)
-            ->then(array($this, 'parseResponseBody'))
-        ;
-    }
+        $response = $handler->handle($client, $request, $httpRequest);
 
-    public function parseResponseBody(Response $response)
-    {
         $body = null;
         if ($this->transformer->supports($response->getHttpResponse())) {
             $body = $this->transformer->unserialize(
@@ -68,6 +62,6 @@ class BodyProvider implements MiddlewareInterface
             );
         }
 
-        return $response->withParsedBody($body);
+        return $response->withBody($body);
     }
 }

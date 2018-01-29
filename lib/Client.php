@@ -71,7 +71,7 @@ class Client implements ClientInterface
             $protocolVersion = '1.1'
         );
 
-        return $this->handler->handle($request, $httpRequest)->wait();
+        return $this->handler->handle($this, $request, $httpRequest);
     }
 
     /**
