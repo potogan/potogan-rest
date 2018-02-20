@@ -53,6 +53,30 @@ class Response
     }
 
     /**
+     * Gets the response status code.
+     *
+     * The status code is a 3-digit integer result code of the server's attempt
+     * to understand and satisfy the request.
+     *
+     * @return int Status code.
+     */
+    public function getStatusCode()
+    {
+        return $this->httpResponse->getStatusCode();
+    }
+
+    /**
+     * Is the response a success response ? Any 2xx response status code will
+     * be considered a success.
+     *
+     * @return boolean
+     */
+    public function isSuccess()
+    {
+        return intval($this->httpResponse->getStatusCode() / 100) === 2;
+    }
+
+    /**
      * Gets the REST Request.
      *
      * @return RequestInterface
