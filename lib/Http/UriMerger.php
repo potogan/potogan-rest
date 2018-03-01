@@ -40,7 +40,7 @@ class UriMerger
             if (substr($parts['path'], 0, 1) === '/') {
                 $uri = $uri->withPath($parts['path']);
             } else {
-                $uri = $uri->withPath($uri->getPath() . $parts['path']);
+                $uri = $uri->withPath(rtrim(dirname($uri->getPath() . 'a'), '/') . '/' . $parts['path']);
             }
         }
 

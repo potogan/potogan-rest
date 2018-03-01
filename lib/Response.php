@@ -39,17 +39,28 @@ class Response
     protected $body;
 
     /**
+     * Is a successfull request/response ? Usually determined by HTTP status
+     * code, but could be overwitten by middleware if needed, to support
+     * badly designed REST services which send errors as HTTP 200.
+     *
+     * @var boolean|null
+     */
+    protected $success;
+
+    /**
      * Class constructor.
      *
      * @param RequestInterface $request     REST Request.
      * @param HttpRequest      $httpRequest HTTP Request.
      * @param HttpResponse     $response    HTTP Response.
+     * @param boolean|null     $success     Is success response.
      */
-    public function __construct(RequestInterface $request, HttpRequest $httpRequest, HttpResponse $httpResponse)
+    public function __construct(RequestInterface $request, HttpRequest $httpRequest, HttpResponse $httpResponse, $success = null)
     {
         $this->request      = $request;
         $this->httpRequest  = $httpRequest;
         $this->httpResponse = $httpResponse;
+        $this->success      = $success !== null ? $success : intval($this->httpResponse->getStatusCode() / 100) === 2;
     }
 
     /**
@@ -73,7 +84,23 @@ class Response
      */
     public function isSuccess()
     {
-        return intval($this->httpResponse->getStatusCode() / 100) === 2;
+        return $this->success;
+    }
+
+    /**
+     * Returns an instance with the given success value.
+     *
+     * @param boolean $success
+     *
+     * @return static
+     */
+    public function withSuccess($success)
+    {
+        $res = clone $this;
+
+        $res->success = $success;
+
+        return $res;
     }
 
     /**

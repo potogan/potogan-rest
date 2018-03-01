@@ -15,6 +15,10 @@
         "php-http/message-factory": "^1.0",
         "php-http/promise": "^1.0"
     },
+    "require-dev": {
+        "guzzlehttp/psr7": "^1.4",
+        "phpunit/phpunit": "^5.7"
+    },
     "suggest": {
         "doctrine/annotations": "1.*"
     },
